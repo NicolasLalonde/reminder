@@ -1,4 +1,5 @@
 #!/bin/sh
+#Copyright (C) 2021 Nicolas Lalonde
 
 print_help() {
 	printf "Usage: %s [OPTION] file\n" "$0"
