@@ -32,6 +32,8 @@ Here is an example of what reminder looks like when using a system-wide dark the
 
 ![Reminder Example](https://raw.githubusercontent.com/NicolasLalonde/reminder/main/reminder.png)
 
+Note that you can scroll down in this window, as well as sort the tasks by any of their columns by clicking the column headers.
+
 ## List Files
 Reminder takes a file as its input. These files contain rows of tasks, which look something like this:
 
