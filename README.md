@@ -28,6 +28,10 @@ Here are a few examples:
 
 `reminder -t "2 months 3 days" file` - show tasks due in at most 2 months and 3 days
 
+Here is an example of what reminder looks like when using a system-wide dark theme.
+
+![Reminder Example](https://raw.githubusercontent.com/NicolasLalonde/reminder/main/reminder.png)
+
 ## List Files
 Reminder takes a file as its input. These files contain rows of tasks, which look something like this:
 
