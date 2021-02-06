@@ -49,7 +49,7 @@ if [ ! -z "$MISSING" ] ; then #if any packages are missing, quit
 fi
 
 add_reminder(){
-	ADD=$(yad --title="Add a Task" --center --form --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" -date-format=%y%m%d)
+	ADD=$(yad --title="Add a Task" --form --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" -date-format=%y%m%d)
 	if [ -z "$ADD" ]; then
 		exit 0
 	fi
@@ -111,7 +111,7 @@ done < "$FILE"
 
 
 show_reminders(){
-YAD='yad --list --title "Upcoming tasks" --text "'"$1"'" --no-selection --center --width 600 --height 600 --print-column=2 --separator="" --checklist --column "Done" --column "Line":HD --column @fore@ --column "Category" --column "Type" --column "Desc." --column "Date"'
+YAD='yad --list --title "Upcoming tasks" --text "'"$1"'" --no-selection --width 600 --height 600 --print-column=2 --separator="" --checklist --column "Done" --column "Line":HD --column @fore@ --column "Category" --column "Type" --column "Desc." --column "Date"'
 eval "$YAD $2"
 }
 
