@@ -58,7 +58,7 @@ add_reminder(){
 	DESC=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $3 }')
 	DATE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $4 }')
 	printf "\nFALSE '%s' '%s' '%s' %s" "$CATY" "$TYPE" "$DESC" "$DATE" >> $FILE
-	printf "Added: '%s' '%s' '%s' %s to your tasks" "$CATY" "$TYPE" "$DESC" "$DATE"
+	printf "Added: '%s' '%s' '%s' %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE"
 }
 if [ ! -z $ADDMODE ]; then
 	while true; do
