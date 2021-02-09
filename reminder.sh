@@ -57,10 +57,11 @@ add_reminder(){
 	TYPE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $2 }')
 	DESC=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $3 }')
 	DATE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $4 }')
-	printf "\nFALSE '%s' '%s' '%s' %s" "$CATY" "$TYPE" "$DESC" "$DATE" >> $FILE
+	printf "FALSE '%s' '%s' '%s' %s\n" "$CATY" "$TYPE" "$DESC" "$DATE" >> $FILE
 	printf "Added: '%s' '%s' '%s' %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE"
 }
 if [ ! -z $ADDMODE ]; then
+	printf "\n" >> $FILE #in case last edit did not end with newline
 	while true; do
 		add_reminder
 	done
