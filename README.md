@@ -7,7 +7,7 @@ Reminder takes a file as input, so you can keep track of separate todo lists.
 
 ## Interface
 Launching Reminder will display a list of your upcoming tasks. 
-Overdue tasks are colored red.
+Overdue tasks are colored red, and tasks due today are colored orange.
 You can check off tasks from the list: the next time you open this list, those tasks won't be listed (although they won't be removed from the file).
 Clicking `OK` will save which tasks you checked off, clicking `Cancel` will act as if you didn't check off any tasks.
 
@@ -49,7 +49,18 @@ Once you have filled in the details, clicking `OK` will save the task and open a
 Once you are done adding tasks, clicking `Cancel` will exit (note that it will not add another task with the information given).
 
 ## Dependencies
-Reminder uses the dialog program `yad`. `yad` does not come preinstalled on most distributions. If you use the `apt` package manager, it can be installed using `sudo apt install yad`.
+Reminder uses the dialog program `yad`. `yad` does not come preinstalled on most distributions. If you use the `apt` package manager, it can be installed using `sudo apt install yad`. Reminder will tell you if you are missing any dependencies. Installing dependencies varies depending on your package manager.
+
+## Installation
+Reminder can be installed using the following commands:
+
+`wget https://raw.githubusercontent.com/NicolasLalonde/reminder/main/reminder.sh` - This downloads the reminder shell script.
+
+`chmod +x reminder.sh` - This ensures that the reminder script can be executed.
+
+`sudo mv reminder.sh /usr/bin/reminder` - This places Reminder in your path so that you can call it with `reminder` in your shell.
+
+You will then most likely need to install yad.
 
 ## Disclaimer
 Reminder is still very much a work-in-progress. If you find any bugs, please create an issue.
