@@ -80,10 +80,12 @@ date_in_range(){
 }
 
 overdue_color(){
-	MAXDATE=$(date -d "now" +%s)
-        CMPDATE=$(date -d "$1" +%s)
-        if [ "$CMPDATE" -lt "$MAXDATE" ]; then
+	NOWDATE=$(date -d "$(date -d "now" +%F)" +%s)
+        DUEDATE=$(date -d "$1" +%s)
+        if [ "$DUEDATE" -lt "$NOWDATE" ]; then
                 printf "RED"
+	elif [ "$DUEDATE" -eq "$NOWDATE" ]; then
+		printf "ORANGE"
 	else
 		printf "WHITE"
         fi
