@@ -37,11 +37,12 @@ Note that you can scroll down in this window, as well as sort the tasks by any o
 ## List Files
 Reminder takes a file as its input. These files contain rows of tasks, which look something like this:
 
-`FALSE 'Operating Systems' 'Readings' 'Chapter 1' 2021-01-28`
+`FALSE|!|'Operating Systems'|!|'Readings'|!|'Chapter 1'|!|2021-01-28`
 
 The first field can be `TRUE` or `FALSE`, and represents whether the task is completed.
 The next three fields are the category, type, and description of the task. They must be strings enclosed in single quotes. 
-The last field is the due date, in the form yyyy-mm-dd. 
+The last field is the due date, in the form yyyy-mm-dd.
+Note that each field is seperated by `|!|`. 
 
 To make a new list, I suggest creating an empty file, then calling `reminder -a` on the file.
 This will open an 'add task' window with which you can add new tasks to this file.

@@ -48,6 +48,7 @@ if [ ! -z "$MISSING" ] ; then #if any packages are missing, quit
 	exit 1
 fi
 
+
 add_reminder(){
 	ADD=$(yad --title="Add a Task" --form --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" -date-format=%y%m%d)
 	if [ -z "$ADD" ]; then
@@ -57,7 +58,7 @@ add_reminder(){
 	TYPE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $2 }')
 	DESC=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $3 }')
 	DATE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $4 }')
-	printf "FALSE '%s' '%s' '%s' %s\n" "$CATY" "$TYPE" "$DESC" "$DATE" >> $FILE
+	printf "FALSE|!|'%s'|!|'%s'|!|'%s'|!|%s\n" "$CATY" "$TYPE" "$DESC" "$DATE" >> $FILE
 	printf "Added: '%s' '%s' '%s' %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE"
 }
 if [ ! -z $ADDMODE ]; then
@@ -69,49 +70,24 @@ fi
 
 
 
-date_in_range(){
-	MAXDATE=$(date -d "now + $TIMEFRAME" +%s)
-	CMPDATE=$(date -d "$1" +%s)
-	if [ "$CMPDATE" -lt "$MAXDATE" ]; then
-		true
-	else
-		false
-	fi
+#unfinished, use for timers
+timer(){
+start=$(date +%s)
+printf '#!/bin/sh\n' > tmp
+while true; do 
+	now=$(date +%s)
+	time=$(date -u --date @$(($now - $start)) +%H:%M:%S)
+	. ./tmp
+	printf '\f\n'
+	printf '%s\n' "$time"
+	sleep 1 
+done | yad --text-info --justify=center --button=Start/Pause:"printf 'break\\n'" > tmp
 }
 
-overdue_color(){
-	NOWDATE=$(date -d "$(date -d "now" +%F)" +%s)
-        DUEDATE=$(date -d "$1" +%s)
-        if [ "$DUEDATE" -lt "$NOWDATE" ]; then
-                printf "RED"
-	elif [ "$DUEDATE" -eq "$NOWDATE" ]; then
-		printf "ORANGE"
-	else
-		printf "WHITE"
-        fi
-}
 
-beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
-
-LINENUM=1
-LIST=""
-TASKS=0
-while read -r line #get lines to show
-do
-	if [ -n "$line" ]; then #skip empty lines
-		if beginswith "FALSE" "$line"; then #only treat undone tasks
-			DESC=$(printf "%s" "$line" | grep -o '\('"'"'\([[:alnum:]]\|[[:space:]]\|[[:punct:]]\)*'"'"'[[:space:]]\?\)\{3\}[0-9-]\+$')
-			DATE=$(printf "%s" "$line" | grep -o '[0-9\-]*$')	
-			COLOUR=$(overdue_color "$DATE")
-			if date_in_range "$DATE"; then
-				LIST="$LIST FALSE $LINENUM $COLOUR $DESC"
-				TASKS=$(expr $TASKS + 1)
-			fi
-    		fi
-	fi 
-    LINENUM=$(expr $LINENUM + 1)
-done < "$FILE"
-
+MAXDATE=$(date -d "now + $TIMEFRAME" +%Y-%m-%d)
+LIST=$(awk -v MAXDATE="$MAXDATE" -f preprocess.awk $FILE)
+TASKS=$(printf '%s' $LIST | grep -o "FALSE'" |wc -l)
 
 show_reminders(){
 YAD='yad --list --title "Upcoming tasks" --text "'"$1"'" --no-selection --width 600 --height 600 --print-column=2 --separator="" --checklist --column "Done" --column "Line":HD --column @fore@ --column "Category" --column "Type" --column "Desc." --column "Date"'
@@ -123,6 +99,5 @@ DONE=$(show_reminders "$TASKS tasks due in the next $TIMEFRAME" "$LIST")
 for line in $DONE; do
 	sed -i "${line}s/^FALSE/TRUE/" $FILE
 done
-
 
 
