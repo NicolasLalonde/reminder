@@ -63,8 +63,8 @@ add_reminder(){
 	TYPE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $2 }')
 	DESC=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $3 }')
 	DATE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $4 }')
-	printf "FALSE|!|'%s'|!|'%s'|!|'%s'|!|%s\n" "$CATY" "$TYPE" "$DESC" "$DATE" >> $FILE
-	printf "Added: '%s' '%s' '%s' %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE"
+	printf "FALSE|!|%s|!|%s|!|%s|!|%s|!|0\n" "$CATY" "$TYPE" "$DESC" "$DATE" >> $FILE
+	printf "Added: %s %s %s %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE"
 }
 if [ ! -z $ADDMODE ]; then
 	printf "\n" >> $FILE #in case last edit did not end with newline
@@ -73,36 +73,69 @@ if [ ! -z $ADDMODE ]; then
 	done
 fi
 
-
-
-#unfinished, use for timers
-timer(){
-start=$(date +%s)
-printf '#!/bin/sh\n' > tmp
-while true; do 
-	now=$(date +%s)
-	time=$(date -u --date @$(($now - $start)) +%H:%M:%S)
-	. ./tmp
-	printf '\f\n'
-	printf '%s\n' "$time"
-	sleep 1 
-done | yad --text-info --justify=center --button=Start/Pause:"printf 'break\\n'" > tmp
-}
-
-
-MAXDATE=$(date -d "now + $TIMEFRAME" +%Y-%m-%d)
-LIST=$(awk -v MAXDATE="$MAXDATE" -f preprocess.awk $FILE)
-TASKS=$(printf '%s' $LIST | grep -o "FALSE'" |wc -l)
-
 show_reminders(){
-YAD='yad --list --title "Upcoming tasks" --text "'"$1"'" --no-selection --width 600 --height 600 --print-column=2 --separator="" --checklist --column "Done" --column "Line":HD --column @fore@ --column "Category" --column "Type" --column "Desc." --column "Date"'
+YAD='yad --list --title "Upcoming tasks" --text "'"$1"'" --no-selection --width 600 --height 600 --separator="|!|" --radiolist --column "Do" --column "Line":HD --column @fore@ --column "Category" --column "Type" --column "Desc." --column "Date" --column "TimeSpent":HD'
 eval "$YAD $2"
 }
 
-DONE=$(show_reminders "$TASKS tasks due in the next $TIMEFRAME" "$LIST")
-#check off done items
-for line in $DONE; do
-	sed -i "${line}s/^FALSE/TRUE/" $FILE
+
+
+MAXDATE=$(date -d "now + $TIMEFRAME" +%Y-%m-%d)
+
+while true; do
+LIST=$(awk -v MAXDATE="$MAXDATE" -f preprocess.awk $FILE)
+TASKS=$(printf '%s' $LIST | grep -o "FALSE'" |wc -l)
+TASK=$(show_reminders "$TASKS tasks due in the next $TIMEFRAME" "$LIST")
+if [ $? -ne 0 ]; then
+	exit
+fi
+TITLE=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $3, $5}')
+LINENUM=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $2}')
+TOTALTIME=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $7}')
+ADDTIME=0
+printf 'start' > .reminder_state.var
+while true; do 	
+	STATE=$(cat ./.reminder_state.var)
+	case "$STATE" in
+		*start ) #does not overide the file so we need a wildcard
+			if [ $ADDTIME -eq 0 ]; then #make sure we are paused
+				START=$(date +%s)
+			fi
+			printf 'count' > .reminder_state.var
+			;;
+		count )
+			NOW=$(date +%s)
+			ADDTIME=$(date -u -d @$(($NOW - $START)) +%s)
+			FULLTOTAL=$(($ADDTIME + $TOTALTIME))
+			SHOWNTIME=$(date -u -d @$FULLTOTAL +%H:%M:%S)
+			printf '%s' "$FULLTOTAL" > .reminder_time.var
+			printf '\f\n' 
+			printf '%s\n' "$SHOWNTIME"
+			;;
+		*pause )
+			TOTALTIME=$(($ADDTIME + $TOTALTIME))
+			ADDTIME=0
+			printf 'wait' > .reminder_state.var
+			;;
+		wait ) 
+			printf '\f\n'
+			printf '%s\n (paused)\n' "$SHOWNTIME"
+			;;
+	esac
+	sleep 1 
+done | yad --text-info --title="$TITLE" --justify=center --button=Pause:"printf 'pause'" --button=Resume:"printf 'start'" --button=Stop:1 --button="Done Task":0 >> .reminder_state.var #yad output is a stream so file can't be overridden anyways
+
+EXITCODE=$?
+TASKDONE="FALSE"
+if [ $EXITCODE -eq 0 ]; then
+	TASKDONE="TRUE"
+fi
+TOTALTIME=$(cat .reminder_time.var)
+rm .reminder_state.var
+rm .reminder_time.var
+
+#I don't like how this reprints every line just to change a single one
+FILE2=$(awk -v LINENUM=$LINENUM -v TASKDONE=$TASKDONE -v TOTALTIME=$TOTALTIME 'BEGIN {FS="\|\!\|"; OFS="|!|"} { if ( NR == LINENUM ) {$1 = TASKDONE; $6 = TOTALTIME;} print $0 }' $FILE)
+printf '%s' "$FILE2" > $FILE
+
 done
-
-
