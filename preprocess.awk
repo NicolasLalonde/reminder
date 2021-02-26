@@ -13,10 +13,9 @@ BEGIN {
 		colour="RED";
 	else
 		colour="WHITE";
-
 	#filter unwanted tasks and print
 	if ( $1 == "FALSE" && $5<MAXDATE )
 	{
-		print $1, NR, colour, $2, $3, $4, $5 
+		print $1, NR, colour, $2, $3, $4, $5, $6 
 	}
 }
