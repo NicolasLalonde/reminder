@@ -2,7 +2,7 @@
 A simple graphical shell-based todo list manager.
 
 Reminder is a POSIX shell script which shows you a list of your upcoming tasks within a given timeframe.
-To use it, simply download and call the reminder.sh script on your todo list file (i.e. `./reminder.sh file`), the other files in the repository are not needed to run.
+You can select a task to work on and track how much time you spend on it.
 Reminder takes a file as input, so you can keep track of separate todo lists.
 
 ## Interface
