@@ -50,14 +50,19 @@ fi
 
 
 add_reminder(){
-	ADD=$(yad --title="Add a Task" --form --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" -date-format=%y%m%d)
+	ADD=$(yad --title="Add a Task" --form --separator='|!|' --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" -date-format=%y%m%d)
 	if [ -z "$ADD" ]; then
 		exit 0
 	fi
-	CATY=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $1 }')
-	TYPE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $2 }')
-	DESC=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $3 }')
-	DATE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="|" } {print $4 }')
+	FIELDCOUNT=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } END {print NF }')
+	if [ $FIELDCOUNT -gt 5 ]; then #yad adds a separator at the end
+		yad --title="Error" --text='You cannot include the sequence: "|!|" in any of the fields.\n\nTask not added. \n\nReturning to add window, fields will be reset to last accepted value...'
+		return
+	fi
+	CATY=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $1 }')
+	TYPE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $2 }')
+	DESC=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $3 }')
+	DATE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $4 }')
 	printf "FALSE|!|'%s'|!|'%s'|!|'%s'|!|%s\n" "$CATY" "$TYPE" "$DESC" "$DATE" >> $FILE
 	printf "Added: '%s' '%s' '%s' %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE"
 }
