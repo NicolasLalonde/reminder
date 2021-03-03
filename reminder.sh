@@ -1,6 +1,9 @@
 #!/bin/sh
 #Copyright (C) 2021 Nicolas Lalonde
 
+CONFIG_DIR=$([ -n "$XDG_CONFIG_HOME" ] && printf '%s' "$XDG_CONFIG_HOME" || printf '%s/.config' "$HOME")
+PREPROCESS_SCRIPT="$CONFIG_DIR/reminder/preprocess.awk"
+
 print_help() {
 	printf "Usage: %s [OPTION] file\n" "$0"
 	printf "Options:\n"
@@ -83,7 +86,7 @@ eval "$YAD $2"
 MAXDATE=$(date -d "now + $TIMEFRAME" +%Y-%m-%d)
 
 while true; do
-LIST=$(awk -v MAXDATE="$MAXDATE" -f preprocess.awk $FILE)
+LIST=$(awk -v MAXDATE="$MAXDATE" -f "$PREPROCESS_SCRIPT" "$FILE")
 TASKS=$(printf '%s' $LIST | grep -o "FALSE'" |wc -l)
 TASK=$(show_reminders "$TASKS tasks due in the next $TIMEFRAME" "$LIST")
 if [ $? -ne 0 ]; then
