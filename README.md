@@ -57,9 +57,20 @@ Reminder can be installed using the following commands:
 
 `wget https://raw.githubusercontent.com/NicolasLalonde/reminder/main/reminder.sh` - This downloads the reminder shell script.
 
+`wget https://raw.githubusercontent.com/NicolasLalonde/reminder/main/preprocess.awk` 
+
 `chmod +x reminder.sh` - This ensures that the reminder script can be executed.
 
-`sudo mv reminder.sh /usr/bin/reminder` - This places Reminder in your path so that you can call it with `reminder` in your shell.
+`CONFIG_DIR=$([ -n "$XDG_CONFIG_HOME" ] && printf '%s' "$XDG_CONFIG_HOME" || printf '%s/.config' "$HOME")` - Define config directory using XDG specification
+
+`mkdir "$CONFIG_DIR"` - Make config directory if it does not exist
+
+`mkdir "$CONFIG_DIR/reminder"` - Make reminder config directory if it does not exist
+
+`mv preprocess.awk "$CONFIG_DIR/reminder/preprocess.awk"` - Move the awk preprocessing script into the config directory
+
+`mv reminder.sh "$HOME/.local/bin/reminder"` - This places Reminder in your path so that you can call it with `reminder` in your shell.
+
 
 You will then most likely need to install yad.
 
