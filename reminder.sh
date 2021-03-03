@@ -1,8 +1,7 @@
 
 #Copyright (C) 2021 Nicolas Lalonde
 
-CONFIG_DIR=$([ -n "$XDG_CONFIG_HOME" ] && printf '%s' "$XDG_CONFIG_HOME" || printf '%s/.config' "$HOME")
-PREPROCESS_SCRIPT="$CONFIG_DIR/reminder/preprocess.awk"
+PREPROCESS_SCRIPT=$([ -e "$XDG_CONFIG_HOME\/reminder\/preprocess.awk" ] && printf '%s/reminder/preprocess.awk' "$XDG_CONFIG_HOME" || printf '%s/.config/reminder/preprocess.awk' "$HOME")
 
 print_help() {
 	printf "Usage: %s [OPTION] file\n" "$0"
