@@ -52,7 +52,6 @@ fi
 
 
 add_reminder(){
-	TIP="test"
 	ADD=$(yad --title="Add a Task" --form --separator='|!|' --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" --date-format=%Y-%m-%d --field='Command' "$SCMD")
 	if [ -z "$ADD" ]; then
 		exit 0
@@ -67,7 +66,10 @@ add_reminder(){
 	DESC=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $3 }')
 	DATE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $4 }')
 	SCMD=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $5 }')
-
+	
+	#try again if date not valid
+	date -d "$DATE" || (yad --title="Error" --text='Please enter a valid date...';return)
+	
 	printf "FALSE|!|'%s'|!|'%s'|!|'%s'|!|%s|!|0|!|%s|!|\n" "$CATY" "$TYPE" "$DESC" "$DATE" "$SCMD" >> $FILE
 	printf "Added: '%s' '%s' '%s' %s %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE" "$SCMD"
 }
