@@ -98,6 +98,8 @@ if [ $? -ne 0 ]; then
 fi
 TITLE=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $3, $5}')
 LINENUM=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $2}')
+SCMD=$(awk -v line=$LINENUM 'BEGIN {FS="\|\!\|"} {if (NR == line) print $7}' $FILE)
+[ -z "$SCMD" ] || $SCMD &
 TOTALTIME=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $7}')
 ADDTIME=0
 printf 'start' > .reminder_state.var
