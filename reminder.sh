@@ -1,4 +1,4 @@
-
+#!/bin/sh
 #Copyright (C) 2021 Nicolas Lalonde
 
 PREPROCESS_SCRIPT=$([ -e "$XDG_CONFIG_HOME\/reminder\/preprocess.awk" ] && printf '%s/reminder/preprocess.awk' "$XDG_CONFIG_HOME" || printf '%s/.config/reminder/preprocess.awk' "$HOME")
@@ -52,12 +52,13 @@ fi
 
 
 add_reminder(){
-	ADD=$(yad --title="Add a Task" --form --separator='|!|' --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" -date-format=%y%m%d)
+	TIP="test"
+	ADD=$(yad --title="Add a Task" --form --separator='|!|' --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" --date-format=%Y-%m-%d --field='Command' "$SCMD")
 	if [ -z "$ADD" ]; then
 		exit 0
 	fi
 	FIELDCOUNT=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } END {print NF }')
-	if [ $FIELDCOUNT -gt 5 ]; then #yad adds a separator at the end
+	if [ $FIELDCOUNT -gt 6 ]; then #yad adds a separator at the end
 		yad --title="Error" --text='You cannot include the sequence: "|!|" in any of the fields.\n\nTask not added. \n\nReturning to add window, fields will be reset to last accepted value...'
 		return
 	fi
@@ -65,8 +66,10 @@ add_reminder(){
 	TYPE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $2 }')
 	DESC=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $3 }')
 	DATE=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $4 }')
-	printf "FALSE|!|'%s'|!|'%s'|!|'%s'|!|%s|!|0\n" "$CATY" "$TYPE" "$DESC" "$DATE" >> $FILE
-	printf "Added: '%s' '%s' '%s' %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE"
+	SCMD=$(printf "%s" "$ADD" | awk 'BEGIN {FS="\|\!\|" } {print $5 }')
+
+	printf "FALSE|!|'%s'|!|'%s'|!|'%s'|!|%s|!|0|!|%s|!|\n" "$CATY" "$TYPE" "$DESC" "$DATE" "$SCMD" >> $FILE
+	printf "Added: '%s' '%s' '%s' %s %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE" "$SCMD"
 }
 if [ ! -z $ADDMODE ]; then
 	printf "\n" >> $FILE #in case last edit did not end with newline
