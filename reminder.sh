@@ -93,7 +93,7 @@ while true; do
 LIST=$(awk -v MAXDATE="$MAXDATE" -f "$PREPROCESS_SCRIPT" "$FILE")
 TASKS=$(printf '%s' "$LIST" | grep -o "FALSE [0-9]" |wc -l)
 TASK=$(show_reminders "$TASKS tasks due in the next $TIMEFRAME" "$LIST")
-if [ $? -ne 0 ]; then
+if [ $? -ne 0 ] || [ -z "$TASK" ] ; then
 	exit
 fi
 TITLE=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $3, $5}')
