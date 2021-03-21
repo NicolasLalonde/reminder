@@ -25,32 +25,6 @@ done
 shift $(expr $OPTIND - 1) #process argument after options
 FILE=$1
 
-check_package() {
-	PKG="$1"
-	if ! command -v "${PKG}" > /dev/null 2>&1; then
-		printf "%s needs %s to run, but it is not installed.\n" "$0" "$PKG" 
-		if command -v apt >/dev/null 2>&1; then #if apt is package manager
-			printf "Try:\nsudo apt install %s\n" "$PKG"	
-		else
-			printf "Install %s to run.\n" "$PKG"
-		fi
-	fi
-}
-
-#ensure all required packages are installed
-MISSING=""
-MISSING="$MISSING$(check_package yad)"
-MISSING="$MISSING$(check_package grep)"
-MISSING="$MISSING$(check_package date)"
-MISSING="$MISSING$(check_package sed)"
-MISSING="$MISSING$(check_package awk)"
-
-if [ ! -z "$MISSING" ] ; then #if any packages are missing, quit
-	printf "%s" "$MISSING"
-	exit 1
-fi
-
-
 add_reminder(){
 	ADD=$(yad --title="Add a Task" --form --separator='|!|' --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" --date-format=%Y-%m-%d --field='Command' "$SCMD")
 	if [ -z "$ADD" ]; then
