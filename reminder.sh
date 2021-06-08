@@ -1,11 +1,9 @@
 #!/bin/sh
 #Copyright (C) 2021 Nicolas Lalonde
 
-PREPROCESS_SCRIPT="./preprocess.awk"
-#$([ -e "$XDG_CONFIG_HOME\/reminder\/preprocess.awk" ] && printf '%s/reminder/preprocess.awk' "$XDG_CONFIG_HOME" || printf '%s/.config/reminder/preprocess.awk' "$HOME")
+PREPROCESS_SCRIPT=$([ -e "$XDG_CONFIG_HOME\/reminder\/preprocess.awk" ] && printf '%s/reminder/preprocess.awk' "$XDG_CONFIG_HOME" || printf '%s/.config/reminder/preprocess.awk' "$HOME")
 
-TIMER_SCRIPT="./stopwatch.o"
-#$([ -e "$XDG_CONFIG_HOME\/reminder\/stopwatch.o" ] && printf '%s/reminder/stopwatch.o' "$XDG_CONFIG_HOME" || printf '%s/.config/reminder/stopwatch.o' "$HOME")
+TIMER_SCRIPT=$([ -e "$XDG_CONFIG_HOME\/reminder\/stopwatch.o" ] && printf '%s/reminder/stopwatch.o' "$XDG_CONFIG_HOME" || printf '%s/.config/reminder/stopwatch.o' "$HOME")
 
 print_help() {
 	printf "Usage: %s [OPTION] file\n" "$0"
