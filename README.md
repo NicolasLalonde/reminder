@@ -6,10 +6,19 @@ You can select a task to work on and track how much time you spend on it.
 Reminder takes a file as input, so you can keep track of separate todo lists.
 
 ## Interface
-Launching Reminder will display a list of your upcoming tasks. 
-Overdue tasks are colored red, and tasks due today are colored orange.
-You can check off tasks from the list: the next time you open this list, those tasks won't be listed (although they won't be removed from the file).
-Clicking `OK` will save which tasks you checked off, clicking `Cancel` will act as if you didn't check off any tasks.
+### The Task List Window
+Running Reminder on a file will open the following window:
+
+![Reminder Dark](https://raw.githubusercontent.com/NicolasLalonde/reminder/main/images/reminder_tasklist.png)
+
+(Using a dark theme)
+
+![Reminder Light](https://raw.githubusercontent.com/NicolasLalonde/reminder/main/images/reminder_tasklist_light.png)
+
+(Using a light theme)
+
+
+Note that you can scroll down in this window, as well as sort the tasks by any of their columns by clicking the column headers.
 
 
 By default, Reminder will show you the tasks due in the next 2 weeks.
@@ -18,34 +27,59 @@ This time frame indicates how much time into the future you want to see, any tas
 This string is passed as an argument to the `date` program, and so takes any string that the `date` program takes.
 Here are a few examples:
 
-`reminder -t "2 weeks" file` - show tasks due in at most 2 weeks
+`reminder -t "2 weeks" <filename>` - show tasks due in at most 2 weeks
 
-`reminder -t "2 days" file` - show tasks due in at most 2 days
+`reminder -t "2 days" <filename>` - show tasks due in at most 2 days
 
-`reminder -t "2 months" file` - show tasks due in at most 2 months
+`reminder -t "2 months" <filename>` - show tasks due in at most 2 months
 
-`reminder -t "2 days ago" file` - show tasks due at most 2 days ago
+`reminder -t "2 days ago" <filename>` - show tasks due at most 2 days ago
 
-`reminder -t "2 months 3 days" file` - show tasks due in at most 2 months and 3 days
+`reminder -t "2 months 3 days" <filename>` - show tasks due in at most 2 months and 3 days
 
-Here is an example of what reminder looks like when using a system-wide dark theme.
 
-![Reminder Example](https://raw.githubusercontent.com/NicolasLalonde/reminder/main/reminder.png)
 
-Note that you can scroll down in this window, as well as sort the tasks by any of their columns by clicking the column headers.
+Overdue tasks are colored red, and tasks due today are colored orange.
+
+### The Stopwatch Window
+You can select a task and click the `OK` button to start working on it.
+
+![Reminder Timer](https://raw.githubusercontent.com/NicolasLalonde/reminder/main/images/reminder_timer.png)
+
+This will execute the start command for the task, if any (See List Files section) and open a stopwatch window which keeps track of how long the task has been worked on.
+
+The `Pause` button temporarilly pauses the timer.
+
+The `Resume` button resumes a paused timer.
+
+The `Stop` button stops the timer, saves the current time, and returns to the task list.
+
+The `Done Task` button marks the current task as completed.
+
+If a task which has already been started and stopped is started again, the timer will resume from the last time saved.
+
 
 ## List Files
 Reminder takes a file as its input. These files contain rows of tasks, which look something like this:
 
-`FALSE|!|'Operating Systems'|!|'Readings'|!|'Chapter 1'|!|2021-01-28`
+`FALSE#!#'Operating Systems'#!#'Readings'#!#'Chapter 1'#!#2021-01-28#!#evince ~/pdf/operating_systems:three_easy_pieces.pdf -p 1#!#`
 
 The first field can be `TRUE` or `FALSE`, and represents whether the task is completed.
 The next three fields are the category, type, and description of the task. They must be strings enclosed in single quotes. 
-The last field is the due date, in the form yyyy-mm-dd.
-Note that each field is seperated by `|!|`. 
+The fifth field is the due date, in the form yyyy-mm-dd.
+The last field is the command to be executed when starting the task.
+All fields are optional.
+Note that each field is seperated by `#!#`. 
 
-To make a new list, I suggest creating an empty file, then calling `reminder -a` on the file.
+
+
+### The Add Task Window
+To make a new list, I suggest creating an empty file, then calling `reminder -a <filename>` on the file.
 This will open an 'add task' window with which you can add new tasks to this file.
+
+![Reminder Add](https://raw.githubusercontent.com/NicolasLalonde/reminder/main/images/reminder_addtask.png)
+
+This window can also be used to add tasks to an existing list.
 Once you have filled in the details, clicking `OK` will save the task and open a new 'add task' window with the same details prepopulated (this saves time when adding multiple similar tasks).
 Once you are done adding tasks, clicking `Cancel` will exit (note that it will not add another task with the information given).
 
@@ -53,26 +87,16 @@ Once you are done adding tasks, clicking `Cancel` will exit (note that it will n
 Reminder uses the dialog program `yad`. `yad` does not come preinstalled on most distributions. If you use the `apt` package manager, it can be installed using `sudo apt install yad`. Reminder will tell you if you are missing any dependencies. Installing dependencies varies depending on your package manager.
 
 ## Installation
-Reminder can be installed using the following commands:
+Reminder can be installed using the following command:
 
-`wget https://raw.githubusercontent.com/NicolasLalonde/reminder/main/reminder.sh` - This downloads the reminder shell script.
+`curl https://raw.githubusercontent.com/NicolasLalonde/reminder/main/install.sh | sh`
 
-`wget https://raw.githubusercontent.com/NicolasLalonde/reminder/main/preprocess.awk` 
-
-`chmod +x reminder.sh` - This ensures that the reminder script can be executed.
-
-`CONFIG_DIR=$([ -n "$XDG_CONFIG_HOME" ] && printf '%s' "$XDG_CONFIG_HOME" || printf '%s/.config' "$HOME")` - Define config directory using XDG specification
-
-`mkdir "$CONFIG_DIR"` - Make config directory if it does not exist
-
-`mkdir "$CONFIG_DIR/reminder"` - Make reminder config directory if it does not exist
-
-`mv preprocess.awk "$CONFIG_DIR/reminder/preprocess.awk"` - Move the awk preprocessing script into the config directory
-
-`mv reminder.sh "$HOME/.local/bin/reminder"` - This places Reminder in your path so that you can call it with `reminder` in your shell.
-
-
+This will run the `install.sh` file found in the repository. 
+It will alert you of any missing dependencies. 
+If there are any, it will quit.
 You will then most likely need to install yad.
+In this case you will need to install the missing dependencies and rerun the installer.
+
 
 ## Disclaimer
 Reminder is still very much a work-in-progress. If you find any bugs, please create an issue.
