@@ -89,7 +89,6 @@ TIMER_PID=$!
 
 sed -ue 's/^/1970-01-01 +/;s/$/ seconds/' ".reminder_stopwatch_fifo" | stdbuf -oL date +%H:%M:%S -uf - | sed -ue 's/^/\f\n/' | yad --text-info --title="$TITLE" --justify=center --button=Pause:"kill -SIGUSR2 $TIMER_PID" --button=Resume:"kill -SIGUSR1 $TIMER_PID" --button=Stop:1 --button="Done Task":0
 
-#change how to get time, kill stopwatch
 EXITCODE=$?
 TASKDONE="FALSE"
 if [ $EXITCODE -eq 0 ]; then
@@ -100,7 +99,6 @@ kill $TIMER_PID
 rm .reminder_stopwatch_fifo
 
 
-#I don't like how this reprints every line just to change a single one
 FILE2=$(awk -v LINENUM=$LINENUM -v TASKDONE=$TASKDONE -v TOTALTIME=$TOTALTIME 'BEGIN {FS="#!#"; OFS="#!#"} { if ( NR == LINENUM ) {$1 = TASKDONE; $6 = TOTALTIME;} print $0 }' $FILE)
 printf '%s' "$FILE2" > $FILE
 
