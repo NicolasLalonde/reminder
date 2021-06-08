@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
 				}
 				time_elapsed = get_time(seconds_precounted, count_start);
 				printf("%.0f\n", time_elapsed);
+				fflush(stdout);
 				break;
 			case PAUSED:
 				if (state_change == 1){

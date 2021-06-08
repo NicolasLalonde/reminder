@@ -1,6 +1,6 @@
 #!/bin/awk -f
 BEGIN { 
-	FS="\|\!\|"; 
+	FS="#!#"; 
 	ORS=" ";
 	"date +%Y-%m-%d" | getline now;
 }
@@ -8,11 +8,11 @@ BEGIN {
 	#set task colour by due date
 	duedate = $5;
 	if ( now == duedate )
-		colour="ORANGE";
+		colour="'dark orange'";
 	else if ( now > duedate)
-		colour="#FF0000";
+		colour="red";
 	else
-		colour=#FFFFFF;
+		colour="'forest green'";
 	#filter unwanted tasks and print
 	if ( $1 == "FALSE" && $5<MAXDATE )
 	{
