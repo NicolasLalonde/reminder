@@ -19,6 +19,7 @@ MISSING=""
 MISSING="$MISSING$(check_package yad)"
 MISSING="$MISSING$(check_package date)"
 MISSING="$MISSING$(check_package awk)"
+MISSING="$MISSING$(check_package gcc)"
 
 if [ ! -z "$MISSING" ] ; then #if any packages are missing, quit
 	printf "%s\n" "$MISSING"
@@ -32,8 +33,15 @@ wget https://raw.githubusercontent.com/NicolasLalonde/reminder/main/reminder.sh
 #download the awk preprocessing helper script
 wget https://raw.githubusercontent.com/NicolasLalonde/reminder/main/preprocess.awk
 
+#download the stopwatch helper script
+wget https://raw.githubusercontent.com/NicolasLalonde/reminder/main/stopwatch.c
+
 #make script executable
 chmod +x reminder.sh
+gcc -o stopwatch.o stopwatch.c
+
+#cleanup
+rm stopwatch.c
 
 #find config directory according to XDG specifications
 CONFIG_DIR=$([ -n "$XDG_CONFIG_HOME" ] && printf '%s' "$XDG_CONFIG_HOME" || printf '%s/.config' "$HOME")
@@ -44,6 +52,7 @@ mkdir "$CONFIG_DIR/reminder"
 
 #move helper scripts into config directory
 mv preprocess.awk "$CONFIG_DIR/reminder/preprocess.awk"
+mv stopwatch.o "$CONFIG_DIR/reminder/stopwatch.o"
 
 #move main script into user executable path
 mv reminder.sh "$HOME/.local/bin/reminder"

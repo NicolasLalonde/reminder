@@ -10,9 +10,9 @@ BEGIN {
 	if ( now == duedate )
 		colour="ORANGE";
 	else if ( now > duedate)
-		colour="RED";
+		colour="#FF0000";
 	else
-		colour="WHITE";
+		colour=#FFFFFF;
 	#filter unwanted tasks and print
 	if ( $1 == "FALSE" && $5<MAXDATE )
 	{

@@ -3,6 +3,8 @@
 
 PREPROCESS_SCRIPT=$([ -e "$XDG_CONFIG_HOME\/reminder\/preprocess.awk" ] && printf '%s/reminder/preprocess.awk' "$XDG_CONFIG_HOME" || printf '%s/.config/reminder/preprocess.awk' "$HOME")
 
+TIMER_SCRIPT=$([ -e "$XDG_CONFIG_HOME\/reminder\/stopwatch.o" ] && printf '%s/reminder/stopwatch.o' "$XDG_CONFIG_HOME" || printf '%s/.config/reminder/stopwatch.o' "$HOME")
+
 print_help() {
 	printf "Usage: %s [OPTION] file\n" "$0"
 	printf "Options:\n"
@@ -25,6 +27,8 @@ done
 shift $(expr $OPTIND - 1) #process argument after options
 FILE=$1
 
+
+#in gui
 add_reminder(){
 	ADD=$(yad --title="Add a Task" --form --separator='|!|' --field=Category "$CATY" --field=Type "$TYPE" --field=Desc. "$DESC" --field=Date:DT "$DATE" --date-format=%Y-%m-%d --field='Command' "$SCMD")
 	if [ -z "$ADD" ]; then
@@ -47,6 +51,7 @@ add_reminder(){
 	printf "FALSE|!|'%s'|!|'%s'|!|'%s'|!|%s|!|0|!|%s|!|\n" "$CATY" "$TYPE" "$DESC" "$DATE" "$SCMD" >> $FILE
 	printf "Added: '%s' '%s' '%s' %s %s to your tasks\n" "$CATY" "$TYPE" "$DESC" "$DATE" "$SCMD"
 }
+#not in gui
 if [ ! -z $ADDMODE ]; then
 	printf "\n" >> $FILE #in case last edit did not end with newline
 	while true; do
@@ -54,6 +59,7 @@ if [ ! -z $ADDMODE ]; then
 	done
 fi
 
+#in gui
 show_reminders(){
 YAD='yad --list --title "Upcoming tasks" --text "'"$1"'" --no-selection --width 600 --height 600 --separator="|!|" --radiolist --column "Do" --column "Line":HD --column @fore@ --column "Category" --column "Type" --column "Desc." --column "Date" --column "TimeSpent":HD'
 eval "$YAD $2"
@@ -70,44 +76,20 @@ TASK=$(show_reminders "$TASKS tasks due in the next $TIMEFRAME" "$LIST")
 if [ $? -ne 0 ] || [ -z "$TASK" ] ; then
 	exit
 fi
+
+
 TITLE=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $3, $5}')
 LINENUM=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $2}')
 SCMD=$(awk -v line=$LINENUM 'BEGIN {FS="\|\!\|"} {if (NR == line) print $7}' $FILE)
 [ -z "$SCMD" ] || eval "$SCMD" &
 TOTALTIME=$(printf '%s' "$TASK" | awk 'BEGIN {FS="\|\!\|"} {print $7}')
-ADDTIME=0
-printf 'start' > .reminder_state.var
-while true; do 	
-	STATE=$(cat ./.reminder_state.var)
-	case "$STATE" in
-		*start ) #does not overide the file so we need a wildcard
-			if [ $ADDTIME -eq 0 ]; then #make sure we are paused
-				START=$(date +%s)
-			fi
-			printf 'count' > .reminder_state.var
-			;;
-		count )
-			NOW=$(date +%s)
-			ADDTIME=$(date -u -d @$(($NOW - $START)) +%s)
-			FULLTOTAL=$(($ADDTIME + $TOTALTIME))
-			SHOWNTIME=$(date -u -d @$FULLTOTAL +%H:%M:%S)
-			printf '%s' "$FULLTOTAL" > .reminder_time.var
-			printf '\f\n' 
-			printf '%s\n' "$SHOWNTIME"
-			;;
-		*pause )
-			TOTALTIME=$(($ADDTIME + $TOTALTIME))
-			ADDTIME=0
-			printf 'wait' > .reminder_state.var
-			;;
-		wait ) 
-			printf '\f\n'
-			printf '%s\n (paused)\n' "$SHOWNTIME"
-			;;
-	esac
-	sleep 1 
-done | yad --text-info --title="$TITLE" --justify=center --button=Pause:"printf 'pause'" --button=Resume:"printf 'start'" --button=Stop:1 --button="Done Task":0 >> .reminder_state.var #yad output is a stream so file can't be overridden anyways
+mkfifo ".reminder_stopwatch_fifo"
+$TIMER_SCRIPT "$TOTALTIME" & > ".reminder_stopwatch_fifo"
+TIMER_PID=$!  
 
+sed -e 's/^/\f\n/' | yad --text-info --title="$TITLE" --justify=center --button=Pause:"kill -SIGUSR2 $TIMER_PID" --button=Resume:"kill -SIGUSR1 $TIMER_PID" --button=Stop:1 --button="Done Task":0 < .reminder_stopwatch_fifo
+
+#change how to get time, kill stopwatch
 EXITCODE=$?
 TASKDONE="FALSE"
 if [ $EXITCODE -eq 0 ]; then
