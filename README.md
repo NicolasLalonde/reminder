@@ -57,19 +57,24 @@ The `Stop` button stops the timer, saves the current time, and returns to the ta
 The `Done Task` button marks the current task as completed.
 
 If a task which has already been started and stopped is started again, the timer will resume from the last time saved.
+Note that the timer window only goes up to 24 hours.
+Past that, the seconds are still counted accurately in the underlying file, but the timer will show itself looping back to 0.
+As such, I reccomend splitting up longer tasks into manageable chunks.
 
 
 ## List Files
 Reminder takes a file as its input. These files contain rows of tasks, which look something like this:
 
-`FALSE#!#'Operating Systems'#!#'Readings'#!#'Chapter 1'#!#2021-01-28#!#evince ~/pdf/operating_systems:three_easy_pieces.pdf -p 1#!#`
+`FALSE#!#'Operating Systems'#!#'Readings'#!#'Chapter 1'#!#2021-01-28#!#342#!#evince ~/pdf/operating_systems:three_easy_pieces.pdf -p 1#!#`
 
 The first field can be `TRUE` or `FALSE`, and represents whether the task is completed.
 The next three fields are the category, type, and description of the task. They must be strings enclosed in single quotes. 
 The fifth field is the due date, in the form yyyy-mm-dd.
+The sixth field is the number of seconds already spent working on the task.
 The last field is the command to be executed when starting the task.
 All fields are optional.
 Note that each field is seperated by `#!#`. 
+Each record is seperated by a newline, and the final record must also be followed by one.
 
 
 
