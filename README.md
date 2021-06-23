@@ -7,7 +7,7 @@ Reminder takes a file as input, so you can keep track of separate todo lists.
 
 ## Contents
 1. [Interface](https://github.com/NicolasLalonde/reminder#interface)
-2. [Task List Files](https://github.com/NicolasLalonde/reminder#task_list_files)
+2. [Task List Files](https://github.com/NicolasLalonde/reminder#task-list-files)
 3. [Dependencies](https://github.com/NicolasLalonde/reminder#dependencies)
 4. [Installation](https://github.com/NicolasLalonde/reminder#installation)
 5. [Disclaimer](https://github.com/NicolasLalonde/reminder#disclaimer)
