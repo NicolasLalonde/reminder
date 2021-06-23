@@ -5,6 +5,13 @@ Reminder is a POSIX shell script which shows you a list of your upcoming tasks w
 You can select a task to work on and track how much time you spend on it.
 Reminder takes a file as input, so you can keep track of separate todo lists.
 
+## Contents
+1. [Interface](https://github.com/NicolasLalonde/reminder#interface)
+2. [Task List Files](https://github.com/NicolasLalonde/reminder#task_list_files)
+3. [Dependencies](https://github.com/NicolasLalonde/reminder#dependencies)
+4. [Installation](https://github.com/NicolasLalonde/reminder#installation)
+5. [Disclaimer](https://github.com/NicolasLalonde/reminder#disclaimer)
+
 ## Interface
 ### The Task List Window
 Running Reminder on a file will open the following window:
@@ -62,7 +69,7 @@ Past that, the seconds are still counted accurately in the underlying file, but 
 As such, I reccomend splitting up longer tasks into manageable chunks.
 
 
-## List Files
+## Task List Files
 Reminder takes a file as its input. These files contain rows of tasks, which look something like this:
 
 `FALSE#!#'Operating Systems'#!#'Readings'#!#'Chapter 1'#!#2021-01-28#!#342#!#evince ~/pdf/operating_systems:three_easy_pieces.pdf -p 1#!#`
@@ -105,3 +112,5 @@ In this case you will need to install the missing dependencies and rerun the ins
 
 ## Disclaimer
 Reminder is still very much a work-in-progress. If you find any bugs, please create an issue.
+
+The entire reminder project (i.e. this repository) is licensed under the GNU GPL version 3 license. A copy of the license is included in the repository.
