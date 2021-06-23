@@ -106,7 +106,6 @@ Reminder can be installed using the following command:
 This will run the `install.sh` file found in the repository. 
 It will alert you of any missing dependencies. 
 If there are any, it will quit.
-You will then most likely need to install yad.
 In this case you will need to install the missing dependencies and rerun the installer.
 
 
